@@ -30,4 +30,6 @@ public class Device {
     private Double mietpreis;
 
     private String vermieterId;
+
+    private DeviceState deviceState = DeviceState.Verfügbar;
 }
