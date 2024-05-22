@@ -17,8 +17,8 @@ public class TwoForOneVoucherTest {
 
     @Test
     public void testOtherDevice() {
-        var device1 = new Device("desc1", "desc1", DeviceType.COMPUTER, 77.0);
-        var device2 = new Device("desc2", "desc2", DeviceType.MOBIL, 77.0);
+        var device1 = new Device("desc1", "description", DeviceType.COMPUTER, 77.0);
+        var device2 = new Device("desc2", "description", DeviceType.AUDIOVIDEO, 77.0);
 
         var voucher = new TwoForOneVoucher(DeviceType.COMPUTER);
         var devices = new ArrayList<Device>();
@@ -30,8 +30,8 @@ public class TwoForOneVoucherTest {
 
     @Test
     public void testSameDevice() {
-        var device1 = new Device("desc1", "desc1", DeviceType.HAUSHALT, 77.0);
-        var device2 = new Device("desc2", "desc2", DeviceType.MOBIL, 33.0);
+        var device1 = new Device("desc1", "description", DeviceType.COMPUTER, 77.0);
+        var device2 = new Device("desc2", "description", DeviceType.COMPUTER, 33.0);
 
         var voucher = new TwoForOneVoucher(DeviceType.COMPUTER);
         var devices = Arrays.asList(device1, device2);
@@ -41,11 +41,11 @@ public class TwoForOneVoucherTest {
 
     @Test
     public void testThreeDevices_sameType() {
-        var device1 = new Device("desc1", "desc1", DeviceType.BÜRO, 77.0);
-        var device2 = new Device("desc2", "desc2", DeviceType.SMARTHOME, 33.0);
-        var device3 = new Device("desc3", "desc3", DeviceType.SMARTHOME, 99.0);
+        var device1 = new Device("desc1", "description", DeviceType.COMPUTER, 77.0);
+        var device2 = new Device("desc2", "description", DeviceType.COMPUTER, 33.0);
+        var device3 = new Device("desc3", "description", DeviceType.COMPUTER, 99.0);
 
-        var voucher = new TwoForOneVoucher(DeviceType.HAUSHALT);
+        var voucher = new TwoForOneVoucher(DeviceType.COMPUTER);
         var devices = Arrays.asList(device1, device2, device3);
 
         assertEquals(104.5, voucher.getDiscount(devices), 0.01);
@@ -53,9 +53,9 @@ public class TwoForOneVoucherTest {
 
     @Test
     public void testThreeDevices_mixedType() {
-        var device1 = new Device("desc1", "desc1", DeviceType.SMARTHOME, 77.0);
-        var device2 = new Device("desc2", "desc2", DeviceType.BÜRO, 33.0);
-        var device3 = new Device("desc3", "desc3", DeviceType.MOBIL, 99.0);
+        var device1 = new Device("desc1", "description", DeviceType.COMPUTER, 77.0);
+        var device2 = new Device("desc2", "description", DeviceType.COMPUTER, 33.0);
+        var device3 = new Device("desc3", "description", DeviceType.AUDIOVIDEO, 99.0);
 
         var voucher = new TwoForOneVoucher(DeviceType.COMPUTER);
         var devices = Arrays.asList(device1, device2, device3);
@@ -66,14 +66,13 @@ public class TwoForOneVoucherTest {
     @ParameterizedTest
     @CsvSource({ "0,0", "1,0", "2,77", "3,115.5", "4,154" })
     public void testMultipleDevices(ArgumentsAccessor argumentsAccessor) {
-        var voucher = new TwoForOneVoucher(DeviceType.HAUSHALT);
-        var device = new Device("desc", "desc", DeviceType.COMPUTER, 77.0);
+        var voucher = new TwoForOneVoucher(DeviceType.COMPUTER);
+        var device = new Device("desc", "description", DeviceType.COMPUTER, 77.0);
         var devices = new ArrayList<Device>();
         for (var i = 0; i < argumentsAccessor.getInteger(0); i++) {
             devices.add(device);
         }
-        var earnings = argumentsAccessor.getDouble(1);
-        assertEquals(earnings, voucher.getDiscount(devices), 0.01);
+        var mietpreis = argumentsAccessor.getDouble(1);
+        assertEquals(mietpreis, voucher.getDiscount(devices), 0.01);
     }
-
 }
