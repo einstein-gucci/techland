@@ -2,7 +2,7 @@
   import axios from "axios";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import { jwt_token} from "../../store";
+  import { jwt_token, user } from "../../store";
 
   // TODO: setze hier die URL zu deinem mit Postman erstellten Mock-Server ein
   const api_root = $page.url.origin;
@@ -23,7 +23,7 @@
     var config = {
       method: "get",
       url: api_root + "/api/device",
-      headers: { Authorization: "Bearer "+$jwt_token },
+      headers: { Authorization: "Bearer " + $jwt_token },
     };
 
     axios(config)
@@ -42,7 +42,7 @@
       url: api_root + "/api/device",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer "+$jwt_token
+        Authorization: "Bearer " + $jwt_token
       },
       data: device,
     };
@@ -59,6 +59,7 @@
   }
 </script>
 
+{#if $user.user_roles && $user.user_roles.includes("admin")}
 <h1 class="mt-3">Create Device</h1>
 <form class="mb-5">
   <div class="row mb-3">
@@ -107,9 +108,9 @@
       />
     </div>
   </div>
-  <button type="button" class="btn btn-primary" on:click={createDevice}
-    >Submit</button>
+  <button type="button" class="btn btn-primary" on:click={createDevice}>Submit</button>
 </form>
+{/if}
 
 <h1>All Devices</h1>
 <table class="table">
