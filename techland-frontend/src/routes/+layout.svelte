@@ -22,23 +22,21 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0"> 
         {#if $isAuthenticated} 
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/vermieter"
-            >Vermieter</a
-          >
+          <a class="nav-link" aria-current="page" href="/vermieter">Vermieter</a>
         </li>
-        {/if} 
-        {#if $isAuthenticated} 
         <li class="nav-item">
           <a class="nav-link" href="/devices">Devices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/account">Account</a>
         </li>
         {/if} 
       </ul>
       <div class="d-flex">
         {#if $isAuthenticated} 
           <span class="navbar-text me-2">{$user.name}</span> 
-          <button type="button" class="btn btn-primary" on:click={auth.logout} 
-            >Log Out</button> 
-          {/if} 
+          <button type="button" class="btn btn-primary" on:click={auth.logout}>Log Out</button> 
+        {/if} 
       </div> 
     </div>
   </div>

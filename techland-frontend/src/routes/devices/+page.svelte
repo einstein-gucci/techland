@@ -2,6 +2,7 @@
   import axios from "axios";
   import { page } from "$app/stores";
   import { onMount } from "svelte";
+  import { jwt_token} from "../../store";
 
   // TODO: setze hier die URL zu deinem mit Postman erstellten Mock-Server ein
   const api_root = $page.url.origin;
@@ -22,7 +23,7 @@
     var config = {
       method: "get",
       url: api_root + "/api/device",
-      headers: {},
+      headers: { Authorization: "Bearer "+$jwt_token },
     };
 
     axios(config)
@@ -41,6 +42,7 @@
       url: api_root + "/api/device",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer "+$jwt_token
       },
       data: device,
     };
