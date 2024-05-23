@@ -3,6 +3,8 @@ package ch.zhaw.techland.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,11 @@ public class DeviceController {
     DeviceRepository deviceRepository;
 
     @PostMapping("/device")
-    public ResponseEntity<Device> createDevice(@RequestBody DeviceCreateDTO dDTO) {
+    public ResponseEntity<Device> createDevice(@RequestBody DeviceCreateDTO dDTO, @AuthenticationPrincipal Jwt jwt) {
+        List<String> userRoles = jwt.getClaimAsStringList("user_roles");
+        if (!userRoles.contains("admin")) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
         Device dDAO = new Device(dDTO.getName(), dDTO.getDescription(), dDTO.getDeviceType(), dDTO.getMietpreis());
         dDAO.setVermieterId(dDTO.getVermieterId());
         Device d = deviceRepository.save(dDAO);
