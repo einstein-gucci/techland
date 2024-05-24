@@ -4,9 +4,13 @@
   import { onMount } from "svelte";
   import { jwt_token, user } from "../../store";
 
-  // TODO: setze hier die URL zu deinem mit Postman erstellten Mock-Server ein
+  // TODO: Setze hier die URL zu deinem mit Postman erstellten Mock-Server ein
   const api_root = $page.url.origin;
-  
+
+  let currentPage;
+  let nrOfPages = 0;
+  let defaultPageSize = 4;
+
   let devices = [];
   let device = {
     name: null,
@@ -15,20 +19,40 @@
     mietpreis: null
   };
 
-  onMount(() => {
-    getDevices();
-  }); 
+  let mietpreisMin;
+  let deviceType;
+
+  $: {
+    if ($jwt_token !== "") {
+      let searchParams = $page.url.searchParams;
+      if (searchParams.has("page")) {
+        currentPage = searchParams.get("page");
+      } else {
+        currentPage = "1";
+      }
+      getDevices();
+    }
+  }
 
   function getDevices() {
+    let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage; 
+    if (mietpreisMin) {
+      query += "&min=" + mietpreisMin;
+    }
+    if (deviceType && deviceType !== "All") {
+      query += "&type=" + deviceType;
+    }
+    
     var config = {
       method: "get",
-      url: api_root + "/api/device",
+      url: api_root + "/api/device" + query,
       headers: { Authorization: "Bearer " + $jwt_token },
     };
 
     axios(config)
       .then(function (response) {
-        devices = response.data;
+        devices = response.data.content;
+        nrOfPages = response.data.totalPages;
       })
       .catch(function (error) {
         alert("Could not get devices");
@@ -57,9 +81,12 @@
         console.log(error);
       });
   }
+
+  function applyFilter() {
+    getDevices();
+  }
 </script>
 
-{#if $user.user_roles && $user.user_roles.includes("admin")}
 <h1 class="mt-3">Create Device</h1>
 <form class="mb-5">
   <div class="row mb-3">
@@ -110,7 +137,31 @@
   </div>
   <button type="button" class="btn btn-primary" on:click={createDevice}>Submit</button>
 </form>
-{/if}
+
+<h1 class="mt-3">Filter Devices</h1>
+<form class="mb-5">
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label" for="mietpreis">Min Mietpreis</label>
+      <input bind:value={mietpreisMin} class="form-control" id="mietpreis" type="number" />
+    </div>
+    <div class="col">
+      <label class="form-label" for="type">Device Type</label>
+      <select bind:value={deviceType} class="form-select" id="type">
+        <option value="All">All</option>
+        <option value="COMPUTER">COMPUTER</option>
+        <option value="MOBIL">MOBIL</option>
+        <option value="AUDIOVIDEO">AUDIOVIDEO</option>
+        <option value="HAUSHALT">HAUSHALT</option>
+        <option value="KÜCHENGERÄT">KÜCHENGERÄT</option>
+        <option value="BÜRO">BÜRO</option>
+        <option value="WERKZEUG">WERKZEUG</option>
+        <option value="SMARTHOME">SMARTHOME</option>
+      </select>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary" on:click={applyFilter}>Apply Filter</button>
+</form>
 
 <h1>All Devices</h1>
 <table class="table">
@@ -137,3 +188,17 @@
     {/each}
   </tbody>
 </table>
+<nav>
+  <ul class="pagination">
+    {#each Array(nrOfPages) as _, i}
+      <li class="page-item">
+        <a
+          class="page-link"
+          class:active={currentPage == i + 1}
+          href={"/devices?page=" + (i + 1)}
+          >{i + 1}
+        </a>
+      </li>
+    {/each}
+  </ul>
+</nav>

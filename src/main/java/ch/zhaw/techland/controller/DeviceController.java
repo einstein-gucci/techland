@@ -1,6 +1,8 @@
 package ch.zhaw.techland.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,24 +42,25 @@ public class DeviceController {
     }
 
     @GetMapping("/device")
-    public ResponseEntity<List<Device>> getAllDevices() {
-        List<Device> allDevices = deviceRepository.findAll();
-        return new ResponseEntity<>(allDevices, HttpStatus.OK);
-    }
+    public ResponseEntity<Page<Device>> getAllDevices(
+            @RequestParam(required = false) Double min,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false, defaultValue = "1") int pageNumber,
+            @RequestParam(required = false, defaultValue = "2") int pageSize) {
+        Page<Device> devicesPage;
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
-    @GetMapping("/device/mietpreis")
-    public ResponseEntity<List<Device>> getDevicesByMietpreis(
-            @RequestParam(required = false) Double max,
-            @RequestParam(required = false) Double min) {
-        List<Device> devices;
-        if (max != null) {
-            devices = deviceRepository.findByMietpreisLessThan(max);
+        if (min != null && type != null) {
+            devicesPage = deviceRepository.findByDeviceTypeAndMietpreisGreaterThanEqual(type, min, pageRequest);
         } else if (min != null) {
-            devices = deviceRepository.findByMietpreisGreaterThanEqual(min);
+            devicesPage = deviceRepository.findByMietpreisGreaterThanEqual(min, pageRequest);
+        } else if (type != null) {
+            devicesPage = deviceRepository.findByDeviceType(type, pageRequest);
         } else {
-            devices = deviceRepository.findAll();
+            devicesPage = deviceRepository.findAll(pageRequest);
         }
-        return new ResponseEntity<>(devices, HttpStatus.OK);
+
+        return new ResponseEntity<>(devicesPage, HttpStatus.OK);
     }
 
     @GetMapping("/device/{id}")
