@@ -4,7 +4,6 @@
   import { onMount } from "svelte";
   import { jwt_token, user } from "../../store";
 
-  // TODO: Setze hier die URL zu deinem mit Postman erstellten Mock-Server ein
   const api_root = $page.url.origin;
 
   let currentPage;
@@ -78,6 +77,38 @@
       })
       .catch(function (error) {
         alert("Could not create device");
+        console.log(error);
+      });
+  }
+
+  function assignToMe(deviceId) {
+    var config = {
+      method: "put",
+      url: `${api_root}/api/service/me/assignDevice?deviceId=${deviceId}`,
+      headers: { Authorization: `Bearer ${$jwt_token}` },
+    };
+    axios(config)
+      .then(function (response) {
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not assign device to me");
+        console.log(error);
+      });
+  }
+
+  function completeDevice(deviceId) {
+    var config = {
+      method: "put",
+      url: `${api_root}/api/service/me/completeDevice?deviceId=${deviceId}`,
+      headers: { Authorization: `Bearer ${$jwt_token}` },
+    };
+    axios(config)
+      .then(function (response) {
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not complete device");
         console.log(error);
       });
   }
@@ -164,7 +195,7 @@
 </form>
 
 <h1>All Devices</h1>
-<table class="table">
+<table class="table align-middle">
   <thead>
     <tr>
       <th scope="col">Name</th>
@@ -173,6 +204,7 @@
       <th scope="col">Mietpreis</th>
       <th scope="col">State</th>
       <th scope="col">VermieterId</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -184,6 +216,19 @@
         <td>{device.mietpreis}</td>
         <td>{device.deviceState}</td>
         <td>{device.vermieterId}</td>
+        <td>
+          {#if device.deviceState === "Vermietet"}
+            <span class="badge bg-secondary">Vermietet</span>
+          {:else if device.deviceState === "Retourniert"}
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>
+              Complete Device
+            </button>
+          {:else if device.deviceState === "Verfügbar"}
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => assignToMe(device.id)}>
+              Mieten
+            </button>
+          {/if}
+        </td>
       </tr>
     {/each}
   </tbody>
