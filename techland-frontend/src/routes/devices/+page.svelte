@@ -1,8 +1,9 @@
 <script>
   import axios from "axios";
+  
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import { jwt_token, user } from "../../store";
+  import { jwt_token, user, myVermieterId } from "../../store";
 
   const api_root = $page.url.origin;
 
@@ -218,16 +219,16 @@
         <td>{device.vermieterId}</td>
         <td>
           {#if device.deviceState === "Vermietet"}
-            <span class="badge bg-secondary">Vermietet</span>
-          {:else if device.deviceState === "Retourniert"}
-            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>
-              Complete Device
-            </button>
-          {:else if device.deviceState === "Verfügbar"}
-            <button type="button" class="btn btn-primary btn-sm" on:click={() => assignToMe(device.id)}>
-              Mieten
-            </button>
-          {/if}
+          <div>
+            <button type="button" class="btn btn-primary btn-sm" disabled>Vermietet</button>
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>Retournieren</button>
+          </div>
+        {:else if device.deviceState === "Retourniert"}
+          <button type="button" class="btn btn-primary btn-sm" disabled>Retourniert</button>
+        {:else if device.deviceState === "Verfügbar"}
+          <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>Mieten</button>
+        {/if}
+        
         </td>
       </tr>
     {/each}

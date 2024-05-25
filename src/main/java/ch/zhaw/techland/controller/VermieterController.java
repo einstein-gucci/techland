@@ -5,13 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.*;
+
 import ch.zhaw.techland.model.Vermieter;
 import ch.zhaw.techland.model.VermieterCreateDTO;
 import ch.zhaw.techland.repository.VermieterRepository;
@@ -46,6 +43,17 @@ public class VermieterController {
         Optional<Vermieter> optVermieter = vermieterRepository.findById(id);
         if (optVermieter.isPresent()) {
             return new ResponseEntity<>(optVermieter.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/me/vermieter")
+    public ResponseEntity<Vermieter> getMyVermieterId(@AuthenticationPrincipal Jwt jwt) {
+        String userEmail = jwt.getClaimAsString("email");
+        Vermieter vermieter = vermieterRepository.findFirstByEmail(userEmail);
+        if (vermieter != null) {
+            return new ResponseEntity<>(vermieter, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
