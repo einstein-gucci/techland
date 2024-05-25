@@ -219,16 +219,18 @@
         <td>{device.vermieterId}</td>
         <td>
           {#if device.deviceState === "Vermietet"}
-          <div>
-            <button type="button" class="btn btn-primary btn-sm" disabled>Vermietet</button>
-            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>Retournieren</button>
-          </div>
-        {:else if device.deviceState === "Retourniert"}
-          <button type="button" class="btn btn-primary btn-sm" disabled>Retourniert</button>
-        {:else if device.deviceState === "Verfügbar"}
-          <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>Mieten</button>
-        {/if}
-        
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>
+              Retournieren
+            </button>
+          {:else if device.deviceState === "Retourniert"}
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>
+              Retourniert
+            </button>
+          {:else if device.deviceState === "Verfügbar"}
+            <button type="button" class="btn btn-primary btn-sm" on:click={() => assignToMe(device.id)}>
+              Mieten
+            </button>
+          {/if}
         </td>
       </tr>
     {/each}
