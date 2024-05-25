@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import ch.zhaw.techland.model.Vermieter;
 import ch.zhaw.techland.model.VermieterCreateDTO;
 import ch.zhaw.techland.repository.VermieterRepository;
+import ch.zhaw.techland.service.MailValidatorService;
+import ch.zhaw.techland.service.RoleService;
 
 import java.util.Optional;
 
@@ -22,8 +24,27 @@ public class VermieterController {
     @Autowired
     VermieterRepository vermieterRepository;
 
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    MailValidatorService mailValidatorService;
+
     @PostMapping("/vermieter")
-    public ResponseEntity<Vermieter> createVermieter(@RequestBody VermieterCreateDTO vDTO) {
+    public ResponseEntity<Vermieter> createVermieter(@RequestBody VermieterCreateDTO vDTO,
+            @AuthenticationPrincipal Jwt jwt) {
+        // Überprüfen, ob der Benutzer die Rolle "admin" hat
+        if (!roleService.hasRole("admin", jwt)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        // E-Mail-Validierung
+        var mailInformation = mailValidatorService.validateEmail(vDTO.getEmail());
+        if (mailInformation.isDisposable() || !mailInformation.isDns() || !mailInformation.isFormat()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        // Erstellen und Speichern des Vermieters
         Vermieter vDAO = new Vermieter(vDTO.getEmail(), vDTO.getName());
         Vermieter v = vermieterRepository.save(vDAO);
         return new ResponseEntity<>(v, HttpStatus.CREATED);

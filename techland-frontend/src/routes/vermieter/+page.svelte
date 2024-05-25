@@ -45,6 +45,29 @@
       });
   }
 
+
+      function validateEmailAndCreateVermieter() {
+          var config = {
+        method: "get",
+            url: "https://disify.com/api/email/" + vermieter.email,
+          };
+
+          axios(config)
+              .then(function (response) {
+                console.log("Validated email " + vermieter.email);
+                console.log(response.data);
+                if (response.data.format && !response.data.disposable && response.data.dns) {
+                  createVermieter();
+                } else {
+                  alert("Email " + vermieter.email + " is not valid.");
+                  }
+                })
+                .catch(function (error) {
+                  alert("Could not validate email");
+                  console.log(error);
+                });
+}
+
   function createVermieter() {
     var config = {
       method: "post",
@@ -65,6 +88,11 @@
         alert("Could not create vermieter");
         console.log(error);
       });
+
+
+
+
+
   }
 </script>
 
@@ -82,7 +110,7 @@
       <input bind:value={vermieter.name} class="form-control" id="name" type="text" />
     </div>
   </div>
-  <button type="button" class="btn btn-primary" on:click={createVermieter}>Submit</button>
+  <button type="button" class="btn btn-primary" on:click={validateEmailAndCreateVermieter}>Submit</button>
 </form>
 
 <h1>All Vermieters</h1>
