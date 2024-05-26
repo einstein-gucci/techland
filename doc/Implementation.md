@@ -113,6 +113,51 @@ Sobald die Integration abgeschlossen war, habe ich meine Webanwendung auf GitHub
 
 ![Auth0](/doc/figures/Auth0.png)
 
+### 3.3.1 Rollenverwaltung mit Auth0
+
+In unserer Anwendung verwenden wir Auth0 zur Verwaltung der Benutzerrollen. Diese Rollen helfen uns, die Zugriffsrechte der Benutzer zu steuern und sicherzustellen, dass nur autorisierte Benutzer bestimmte Aktionen durchführen können. Die folgenden Rollen wurden definiert:
+
+#### Rollenbeschreibung
+
+##### admin
+- **Beschreibung**: Diese Rolle wird Administratoren zugewiesen, die umfassende Zugriffsrechte auf alle Ressourcen und Funktionen der Anwendung haben. Administratoren können Benutzer verwalten, Rollen zuweisen und sämtliche Inhalte erstellen, lesen, aktualisieren und löschen.
+- **Berechtigungen**: Vollzugriff auf alle API-Endpunkte und administrative Funktionen der Anwendung.
+
+##### Mieter
+- **Beschreibung**: Diese Rolle wird Mietern zugewiesen, die eingeschränkte Zugriffsrechte auf die Anwendung haben. Mieter können ihre eigenen Profile verwalten und auf bestimmte mieterspezifische Funktionen zugreifen.
+- **Berechtigungen**: Zugriff auf mieterspezifische API-Endpunkte und Funktionen. Keine administrativen Rechte.
+
+##### Vermieter
+- **Beschreibung**: Diese Rolle wird Vermietern zugewiesen, die erweiterte Zugriffsrechte auf die Anwendung haben. Vermieter können ihre eigenen Profile verwalten, Inhalte erstellen und auf bestimmte vermieterspezifische Funktionen zugreifen.
+- **Berechtigungen**: Zugriff auf vermieterspezifische API-Endpunkte und Funktionen. Keine administrativen Rechte.
+
+#### Verwaltung der Rollen in Auth0
+
+![Auth0Roles](/doc/figures/Auth0Roles.png)
+
+Um die oben beschriebenen Rollen in Auth0 zu erstellen und zu verwalten, befolgen Sie die folgenden Schritte:
+
+1. Melden Sie sich bei Ihrem Auth0-Dashboard an.
+2. Navigieren Sie zu **Roles** im linken Menü.
+3. Klicken Sie auf **Create Role**, um eine neue Rolle zu erstellen.
+4. Geben Sie der Rolle einen Namen und eine Beschreibung entsprechend der oben definierten Rollen.
+5. Fügen Sie die entsprechenden Berechtigungen hinzu, die dieser Rolle zugewiesen werden sollen.
+6. Speichern Sie die Rolle.
+
+#### Zuweisen von Rollen zu Benutzern
+
+Um Rollen zu Benutzern zuzuweisen, befolgen Sie die folgenden Schritte:
+
+1. Melden Sie sich bei Ihrem Auth0-Dashboard an.
+2. Navigieren Sie zu **Users** im linken Menü.
+3. Wählen Sie den Benutzer aus, dem Sie eine Rolle zuweisen möchten.
+4. Gehen Sie zum Tab **Roles** und klicken Sie auf **Assign Roles**.
+5. Wählen Sie die gewünschte Rolle aus und klicken Sie auf **Assign**.
+
+Durch die Verwendung dieser Rollenverwaltung können wir sicherstellen, dass Benutzer nur auf die Ressourcen und Funktionen zugreifen können, für die sie autorisiert sind, und dass sensible administrative Aufgaben nur von berechtigten Administratoren durchgeführt werden können.
+
+
+
 ### 3.4 Webanwendung auf Azure deployen: VS Code, Docker, GitHub
 
 #### 3.4.1 Integration mit VS Code
@@ -186,28 +231,10 @@ Sobald ein Vermieter erfasst wird, werden seine Informationen in der MongoDB-Dat
 
 ![MongoDB](/doc/figures/MongoDB.png)
 
-### 3.6 Test Coverage für Techland Plattform
 
-Zur Messung der Code Coverage in meiner Techland-Plattform wurde das JaCoCo-Plugin in die `pom.xml` Datei integriert. Die notwendigen Anweisungen befinden sich im Abschnitt `build – plugins`. Nach der Integration des JaCoCo-Plugins mit den entsprechenden Anweisungen wurde im Projektverzeichnis der Befehl `mvnw verify` ausgeführt, um die Tests auszuführen und die Code Coverage zu messen. Nach der Ausführung der Tests wurden die JaCoCo-Reports im Verzeichnis `target/site/jacoco` erstellt und die Datei `index.html` wurde im Browser geöffnet, um die Ergebnisse zu analysieren.
+### 3.6 Frontend Erweiterungen: Pagination, Filtering, Berücksichtigung von User-Rollen
 
-Um sicherzustellen, dass von Lombok generierter Code korrekt behandelt wird, wurde die Datei `lombok.config` unter `src/main/java` mit folgendem Inhalt erstellt: `lombok.addLombokGeneratedAnnotation=true`. Dies weist Lombok an, den generierten Code zu annotieren, sodass JaCoCo diesen bei der Auswertung ausschließen kann. Schließlich wurden die Befehle `mvn clean` und `mvn verify` ausgeführt, um den generierten Code und die JaCoCo-Reports komplett neu zu erstellen.
-
-Die beigefügte Grafik zeigt die Test Coverage für die verschiedenen Komponenten der Techland-Plattform.
-
-![JaCoCo](/doc/figures/JaCoCo.png)
-
-- Für die Komponente `ch.zhaw.techland.controller` wurden 4% der Anweisungen und 0% der Zweige nicht abgedeckt.
-- Für die Komponente `ch.zhaw.techland.model` wurden 36% der Anweisungen und 20% der Zweige nicht abgedeckt.
-- Für die Komponente `ch.zhaw.techland.service` wurden 3% der Anweisungen und 0% der Zweige nicht abgedeckt.
-- Für die Komponente `ch.zhaw.techland.config` wurden 69% der Anweisungen und 0% der Zweige nicht abgedeckt.
-- Für die Komponente `ch.zhaw.techland` wurden 37% der Anweisungen und keine Zweige erfasst.
-- Für die Komponente `ch.zhaw.techland.model.voucher` wurden 100% der Anweisungen und 100% der Zweige nicht abgedeckt.
-
-Insgesamt zeigt die Grafik eine Code Coverage von 31% für Anweisungen und 13% für Zweige, mit detaillierten Informationen über die Anzahl der verpassten Anweisungen, Komplexität, verpasste Zeilen, Methoden und Klassen. Diese Ergebnisse bieten eine umfassende Übersicht über die Testabdeckung der Techland-Plattform und helfen dabei, Bereiche zu identifizieren, die verbessert werden müssen, um die Codequalität zu erhöhen.
-
-### 3.7 Frontend Erweiterungen: Pagination, Filtering, Berücksichtigung von User-Rollen
-
-#### 3.7.1 Pagination
+#### 3.6.1 Pagination
 
 Für die Techland-Plattform wurde eine Pagination-Funktion implementiert, um die Benutzerfreundlichkeit bei der Anzeige der Elektronikgeräte zu verbessern. Mit der Pagination können die Geräte in mehrere Seiten unterteilt dargestellt werden, anstatt alle auf einmal anzuzeigen. Dies wird durch die Erweiterung des Endpoints `localhost/api/device` um die Query-Parameter `pageNumber` und `pageSize` ermöglicht. Diese Parameter erlauben es, die gewünschte Seite und die Anzahl der Geräte pro Seite festzulegen. Im Frontend wurde die Pagination mithilfe von Bootstrap realisiert, was eine einfache und intuitive Navigation zwischen den Seiten ermöglicht. So können Benutzer bequem durch die verschiedenen Seiten blättern und die Geräteübersicht effizient durchsuchen.
 
@@ -215,7 +242,7 @@ Für die Techland-Plattform wurde eine Pagination-Funktion implementiert, um die
 
 Die Grafik zeigt die implementierte Pagination-Funktion der Techland-Plattform. Auf dem Bildschirm ist eine Liste von Elektronikgeräten zu sehen, die in Seiten unterteilt ist. Am unteren Rand der Liste befinden sich Navigationsschaltflächen, mit denen der Benutzer zwischen den Seiten wechseln kann.
 
-### 3.7.2 Filterfunktion
+### 3.6.2 Filterfunktion
 
 Um die Suche nach Elektronikgeräten auf der Techland-Plattform zu erleichtern, wurde eine umfassende Filterfunktion implementiert. Diese Funktion ermöglicht es den Benutzern, gezielt nach bestimmten Geräteeigenschaften zu suchen. Nutzer können Filter wie den Gerätetyp oder einen Mindestmietpreis anwenden. Diese Filter werden durch zusätzliche Query-Parameter im Endpoint `localhost/api/device` realisiert. Im Frontend wurde ein Formular hinzugefügt, über das Benutzer die gewünschten Filterkriterien eingeben können. Nach Eingabe der Filterkriterien wird die Gerätekatalog aktualisiert, sodass nur die Geräte angezeigt werden, die den Suchkriterien entsprechen. Dies verbessert die Benutzererfahrung erheblich und ermöglicht eine gezieltere Suche nach den gewünschten Geräten.
 
@@ -223,7 +250,7 @@ Um die Suche nach Elektronikgeräten auf der Techland-Plattform zu erleichtern, 
 
 Die Grafik zeigt die implementierte Filterfunktion der Techland-Plattform. Oberhalb der Liste der Elektronikgeräte befinden sich Eingabefelder und Dropdown-Menüs, über die der Benutzer spezifische Kriterien wie Geräteeigenschaften oder Mietpreise eingeben kann. Nach Anwendung der Filter werden nur die Geräte angezeigt, die den eingegebenen Kriterien entsprechen.
 
-### 3.7.3 Devicezuweisung
+### 3.6.3 Devicezuweisung
 
 Ein wesentlicher Bestandteil der Techland-Plattform ist die Verwaltung der Gerätevermietung. Hierfür wurde der Endpoint `localhost/api/service/assignDevice` implementiert, der die Zuweisung eines Geräts an einen bestimmten Mieter ermöglicht. Diese Funktion ist entscheidend, um den Mietprozess zu verwalten und sicherzustellen, dass Geräte effizient und nachvollziehbar vermietet werden können. Im Frontend wurde eine Benutzeroberfläche entwickelt, die es Administratoren erleichtert, verfügbare Geräte auszuwählen und sie den entsprechenden Mietern zuzuweisen. Die relevanten Informationen, wie die Geräte-ID, der Name des Mieters und der Mietstatus, werden hierbei übersichtlich dargestellt. Diese Erweiterung trägt wesentlich zur Verbesserung der Verwaltung und Nachverfolgung von Mietvorgängen auf der Techland-Plattform bei.
 
