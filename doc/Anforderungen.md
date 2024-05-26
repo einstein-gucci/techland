@@ -2,7 +2,7 @@
 
 ## 2.1 Datenmodell
 
-In diesem Abschnitt des Projekts wird ein Entity-Relationship-Diagramm (ER-Diagramm) vorgestellt, das als grundlegende Struktur für die TechLand-Plattform dient. Das ER-Diagramm fungiert als visuelle Darstellung der verschiedenen Entitäten und ihrer Beziehungen zueinander. Es bietet einen umfassenden Überblick über die Datenstruktur und die Wechselwirkungen innerhalb des Systems.
+In diesem Abschnitt des Projekts wird ein Entity-Relationship-Diagramm (ER-Diagramm) vorgestellt, das als grundlegende Struktur für die TechLand-Plattform dient. Das ER-Diagramm fungiert als visuelle Darstellung der verschiedenen Entitäten und ihrer Beziehungen zueinander. Es bietet einen umfassenden Überblick über die Datenstruktur und die Wechselwirkungen innerhalb des Systems. 
 
 Durch die sorgfältige Ausarbeitung dieses Modells wird eine klare Roadmap für die Entwicklung und Implementierung der Plattform geschaffen. Dies ermöglicht es Entwicklern und Stakeholdern gleichermaßen, ein gemeinsames Verständnis der Funktionsweise und der zugrunde liegenden Daten zu erlangen.
 
