@@ -24,6 +24,9 @@
         <li class="nav-item">
           <a class="nav-link" aria-current="page" href="/vermieter">Vermieter</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="/mieter">Mieter</a>
+        </li>
         {/if}
         {#if $isAuthenticated && $user.user_roles && ($user.user_roles.includes("admin") || $user.user_roles.includes("Vermieter"))} 
         <li class="nav-item">
