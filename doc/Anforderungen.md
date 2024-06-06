@@ -28,7 +28,7 @@ Ich habe den Vermieter auf der linken Seite und den Mieter auf der rechten Seite
 
 ## 2.3 Beschreibung der Use-Cases
 
-Im Anschluss habe ich jeden Use-Case im Detail beschrieben. Dabei erläutere ich für jeden Anwendungsfall das Ziel, die beteiligten Akteure, bestehende Bedingungen, den Auslöser, den Ablauf des Normalfalls und das erwartete Ergebnis.
+Im Anschluss habe ich jeden Use-Case im Detail beschrieben. Dabei erläutere ich für jeden Anwendungsfall das Ziel, die beteiligten Akteure, bestehende Bedingungen, den Auslöser, den Ablauf des Normalfalls und das erwartete Ergebnis. 
 
 ![Register](/doc/figures/Register.png)
 
