@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-TechlandApplication<techland>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ch.zhaw.techland.TechlandApplication",
+            "projectName": "techland",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
