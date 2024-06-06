@@ -1,173 +1,206 @@
 <style>
   .background {
-      background-color: #add8e6; /* Hellblau für den Hintergrund */
-      min-height: 100vh;
-      padding: 20px;
-      margin: 0;
+    background-color: #add8e6; /* Hellblau für den Hintergrund */
+    min-height: 100vh;
+    padding: 20px;
+    margin: 0;
   }
 
   .card {
-      backdrop-filter: blur(10px);
-      background-color: rgba(255, 255, 255, 0.8);
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 1000px;
-      padding: 20px;
-      margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1000px;
+    padding: 20px;
+    margin-bottom: 20px;
   }
 
   .card-header {
-      border-radius: 10px 10px 0 0;
-      background-color: #4682b4; /* Dunkleres Blau für die Kartenüberschrift */
-      color: white;
+    border-radius: 10px 10px 0 0;
+    background-color: #4682b4; /* Dunkleres Blau für die Kartenüberschrift */
+    color: white;
   }
 
   .btn-primary {
-      background-color: #4682b4;
-      border-color: #4682b4;
+    background-color: #4682b4;
+    border-color: #4682b4;
   }
 
   .btn-primary:hover {
-      background-color: #315f86;
-      border-color: #315f86;
+    background-color: #315f86;
+    border-color: #315f86;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
   }
 
   .pagination .page-item .page-link.active {
-      background-color: #4682b4;
-      border-color: #4682b4;
-      color: white;
+    background-color: #4682b4;
+    border-color: #4682b4;
+    color: white;
   }
 
   h1 {
-      text-align: center;
-      margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 20px;
   }
 
   .filter-form, .devices-table {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .delete-icon {
+    font-size: 18px;
+    color: #fff;
   }
 </style>
 
 <script>
-import axios from "axios";
-import { page } from "$app/stores";
-import { jwt_token } from "../../store";
+  import axios from "axios";
+  import { page } from "$app/stores";
+  import { jwt_token } from "../../store";
 
-const api_root = $page.url.origin;
+  const api_root = $page.url.origin;
 
-let currentPage;
-let nrOfPages = 0;
-let defaultPageSize = 4;
+  let currentPage;
+  let nrOfPages = 0;
+  let defaultPageSize = 4;
 
-let devices = [];
-let device = {
-  name: null,
-  description: null,
-  deviceType: null,
-  mietpreis: null
-};
+  let devices = [];
+  let device = {
+    name: null,
+    description: null,
+    deviceType: null,
+    mietpreis: null
+  };
 
-let mietpreisMin;
-let deviceType;
+  let mietpreisMin;
+  let deviceType;
 
-$: {
-  if ($jwt_token !== "") {
-    let searchParams = $page.url.searchParams;
-    if (searchParams.has("page")) {
-      currentPage = searchParams.get("page");
-    } else {
-      currentPage = "1";
+  $: {
+    if ($jwt_token !== "") {
+      let searchParams = $page.url.searchParams;
+      if (searchParams.has("page")) {
+        currentPage = searchParams.get("page");
+      } else {
+        currentPage = "1";
+      }
+      getDevices();
     }
+  }
+
+  function getDevices() {
+    let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage; 
+    if (mietpreisMin) {
+      query += "&min=" + mietpreisMin;
+    }
+    if (deviceType && deviceType !== "All") {
+      query += "&type=" + deviceType;
+    }
+    
+    var config = {
+      method: "get",
+      url: api_root + "/api/device" + query,
+      headers: { Authorization: "Bearer " + $jwt_token },
+    };
+
+    axios(config)
+      .then(function (response) {
+        devices = response.data.content;
+        nrOfPages = response.data.totalPages;
+      })
+      .catch(function (error) {
+        alert("Could not get devices");
+        console.log(error);
+      });
+  }
+
+  function createDevice() {
+    var config = {
+      method: "post",
+      url: api_root + "/api/device",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + $jwt_token
+      },
+      data: device,
+    };
+
+    axios(config)
+      .then(function (response) {
+        alert("Device created");
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not create device");
+        console.log(error);
+      });
+  }
+
+  function deleteDevice(deviceId) {
+    var config = {
+      method: "delete",
+      url: `${api_root}/api/device/${deviceId}`,
+      headers: { Authorization: `Bearer ${$jwt_token}` },
+    };
+
+    axios(config)
+      .then(function (response) {
+        alert("Device deleted");
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not delete device");
+        console.log(error);
+      });
+  }
+
+  function assignToMe(deviceId) {
+    var config = {
+      method: "put",
+      url: `${api_root}/api/service/me/assignDevice?deviceId=${deviceId}`,
+      headers: { Authorization: `Bearer ${$jwt_token}` },
+    };
+    axios(config)
+      .then(function (response) {
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not assign device to me");
+        console.log(error);
+      });
+  }
+
+  function completeDevice(deviceId) {
+    var config = {
+      method: "put",
+      url: `${api_root}/api/service/me/completeDevice?deviceId=${deviceId}`,
+      headers: { Authorization: `Bearer ${$jwt_token}` },
+    };
+    axios(config)
+      .then(function (response) {
+        getDevices();
+      })
+      .catch(function (error) {
+        alert("Could not complete device");
+        console.log(error);
+      });
+  }
+
+  function applyFilter() {
     getDevices();
   }
-}
-
-function getDevices() {
-  let query = "?pageSize=" + defaultPageSize + "&pageNumber=" + currentPage; 
-  if (mietpreisMin) {
-    query += "&min=" + mietpreisMin;
-  }
-  if (deviceType && deviceType !== "All") {
-    query += "&type=" + deviceType;
-  }
-  
-  var config = {
-    method: "get",
-    url: api_root + "/api/device" + query,
-    headers: { Authorization: "Bearer " + $jwt_token },
-  };
-
-  axios(config)
-    .then(function (response) {
-      devices = response.data.content;
-      nrOfPages = response.data.totalPages;
-    })
-    .catch(function (error) {
-      alert("Could not get devices");
-      console.log(error);
-    });
-}
-
-function createDevice() {
-  var config = {
-    method: "post",
-    url: api_root + "/api/device",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + $jwt_token
-    },
-    data: device,
-  };
-
-  axios(config)
-    .then(function (response) {
-      alert("Device created");
-      getDevices();
-    })
-    .catch(function (error) {
-      alert("Could not create device");
-      console.log(error);
-    });
-}
-
-function assignToMe(deviceId) {
-  var config = {
-    method: "put",
-    url: `${api_root}/api/service/me/assignDevice?deviceId=${deviceId}`,
-    headers: { Authorization: `Bearer ${$jwt_token}` },
-  };
-  axios(config)
-    .then(function (response) {
-      getDevices();
-    })
-    .catch(function (error) {
-      alert("Could not assign device to me");
-      console.log(error);
-    });
-}
-
-function completeDevice(deviceId) {
-  var config = {
-    method: "put",
-    url: `${api_root}/api/service/me/completeDevice?deviceId=${deviceId}`,
-    headers: { Authorization: `Bearer ${$jwt_token}` },
-  };
-  axios(config)
-    .then(function (response) {
-      getDevices();
-    })
-    .catch(function (error) {
-      alert("Could not complete device");
-      console.log(error);
-    });
-}
-
-function applyFilter() {
-  getDevices();
-}
 </script>
 
 <div class="background">
@@ -176,7 +209,7 @@ function applyFilter() {
   <div class="row justify-content-center">
     <div class="col-md-8">
       <div class="card">
-        <div class="card-header">Sign up</div>
+        <div class="card-header">New Device erfassen</div>
         <div class="card-body">
           <form
             on:submit|preventDefault={createDevice}
@@ -290,6 +323,9 @@ function applyFilter() {
                   <td>{device.mietpreis}</td>
                   <td>{device.deviceState}</td>
                   <td>{device.vermieterId}</td>
+                  <td>
+                    <button class="btn btn-danger delete-icon" on:click={() => deleteDevice(device.id)}>🗑️</button>
+                  </td>
                   <td>
                     {#if device.deviceState === "Vermietet"}
                       <button type="button" class="btn btn-primary btn-sm" on:click={() => completeDevice(device.id)}>

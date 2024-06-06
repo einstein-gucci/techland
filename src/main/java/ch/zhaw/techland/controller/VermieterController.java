@@ -33,8 +33,8 @@ public class VermieterController {
     @PostMapping("/vermieter")
     public ResponseEntity<Vermieter> createVermieter(@RequestBody VermieterCreateDTO vDTO,
             @AuthenticationPrincipal Jwt jwt) {
-        // Überprüfen, ob der Benutzer die Rolle "admin" hat
-        if (!roleService.hasRole("admin", jwt)) {
+        // Überprüfen, ob der Benutzer die Rolle "admin" oder "Vermieter" hat
+        if (!roleService.hasRole("admin", jwt) && !roleService.hasRole("Vermieter", jwt)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
@@ -50,10 +50,33 @@ public class VermieterController {
         return new ResponseEntity<>(v, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/vermieter/{id}")
+    public ResponseEntity<Void> deleteVermieter(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
+        // Überprüfen, ob der Benutzer die Rolle "admin" hat
+        if (!roleService.hasRole("admin", jwt)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        // Überprüfen, ob der Vermieter vorhanden ist
+        if (!vermieterRepository.existsById(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Vermieter löschen
+        vermieterRepository.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @GetMapping("/vermieter")
     public ResponseEntity<Page<Vermieter>> getAllVermieter(
             @RequestParam(required = false, defaultValue = "1") int pageNumber,
-            @RequestParam(required = false, defaultValue = "4") int pageSize) {
+            @RequestParam(required = false, defaultValue = "4") int pageSize,
+            @AuthenticationPrincipal Jwt jwt) {
+        // Überprüfen, ob der Benutzer die Rolle "admin" oder "Vermieter" hat
+        if (!roleService.hasRole("admin", jwt) && !roleService.hasRole("Vermieter", jwt)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
         Page<Vermieter> vermietersPage = vermieterRepository.findAll(pageRequest);
         return new ResponseEntity<>(vermietersPage, HttpStatus.OK);

@@ -37,12 +37,14 @@ import auth from "../auth.service";
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        {#if $isAuthenticated && $user.user_roles && $user.user_roles.includes("admin")}
+        {#if $isAuthenticated && $user.user_roles && ($user.user_roles.includes("admin") || $user.user_roles.includes("Vermieter"))}
         <li class="nav-item">
           <a class="nav-link text-white" aria-current="page" href="/vermieter">👨‍💼 Vermieter</a>
         </li>
+        {/if}
+        {#if $isAuthenticated && $user.user_roles && $user.user_roles.includes("Mieter")}
         <li class="nav-item">
-          <a class="nav-link text-white" href="/mieter">🧑🏻‍💼Mieter</a>
+          <a class="nav-link text-white" href="/mieter">🧑🏻‍💼 Mieter</a>
         </li>
         {/if}
         {#if $isAuthenticated}

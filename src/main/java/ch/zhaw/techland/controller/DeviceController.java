@@ -7,10 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,13 +33,29 @@ public class DeviceController {
     @PostMapping("/device")
     public ResponseEntity<Device> createDevice(@RequestBody DeviceCreateDTO dDTO, @AuthenticationPrincipal Jwt jwt) {
         List<String> userRoles = jwt.getClaimAsStringList("user_roles");
-        if (!userRoles.contains("admin")) {
+        if (!userRoles.contains("admin") && !userRoles.contains("Vermieter")) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         Device dDAO = new Device(dDTO.getName(), dDTO.getDescription(), dDTO.getDeviceType(), dDTO.getMietpreis());
         dDAO.setVermieterId(dDTO.getVermieterId());
         Device d = deviceRepository.save(dDAO);
         return new ResponseEntity<>(d, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/device/{id}")
+    public ResponseEntity<Void> deleteDevice(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
+        List<String> userRoles = jwt.getClaimAsStringList("user_roles");
+        if (!userRoles.contains("admin") && !userRoles.contains("Vermieter")) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        Optional<Device> optDevice = deviceRepository.findById(id);
+        if (optDevice.isPresent()) {
+            deviceRepository.delete(optDevice.get());
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/device")
